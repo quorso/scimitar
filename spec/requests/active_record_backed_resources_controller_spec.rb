@@ -136,7 +136,7 @@ RSpec.describe Scimitar::ActiveRecordBackedResourcesController do
         expect(result.dig('Resources', 0, 'name', 'familyName')).to eql 'Ark'
       end
 
-      # https://github.com/RIPAGlobal/scimitar/issues/37
+      # https://github.com/pond/scimitar/issues/37
       #
       it 'applies a filter, with case-insensitive attribute matching (GitHub issue #37)' do
         get '/Users', params: {
@@ -159,7 +159,7 @@ RSpec.describe Scimitar::ActiveRecordBackedResourcesController do
         expect(usernames).to match_array(['2'])
       end
 
-      # https://github.com/RIPAGlobal/scimitar/issues/115
+      # https://github.com/pond/scimitar/issues/115
       #
       it 'handles broken Microsoft filters (GitHub issue #115)' do
         get '/Users', params: {

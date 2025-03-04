@@ -296,7 +296,7 @@ module Scimitar
         # the part before the "[" as a prefix - "emails[type" to "emails.type",
         # with similar substitutions therein.
         #
-        # Further, via https://github.com/RIPAGlobal/scimitar/issues/115 we see
+        # Further, via https://github.com/pond/scimitar/issues/115 we see
         # a requirement to support a broken form emitted by Microsoft; that is
         # supported herein.
         #
@@ -380,7 +380,7 @@ module Scimitar
                 character_before_closing_bracket = matches[1]
                 characters_after_closing_bracket = matches[2]
 
-                # https://github.com/RIPAGlobal/scimitar/issues/115 - detect
+                # https://github.com/pond/scimitar/issues/115 - detect
                 # bad Microsoft filters. After the closing bracket, we expect a
                 # dot then valid attribute characters and at least one white
                 # space character and filter operator, but we split on spaces,
@@ -470,7 +470,7 @@ module Scimitar
           #
           # Scimitar currently has a limitation where it strips schema IDs in
           # things like PATCH operation path traversal; see
-          # https://github.com/RIPAGlobal/scimitar/issues/130. At least that
+          # https://github.com/pond/scimitar/issues/130. At least that
           # makes things easy here; use the same approach and strip them out!
           #
           # We don't know which resource is being queried at this layer of the

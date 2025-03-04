@@ -769,8 +769,8 @@ module Scimitar
                   # Handle extension schema. Contributed by @bettysteger and
                   # @MorrisFreeman via:
                   #
-                  #   https://github.com/RIPAGlobal/scimitar/issues/48
-                  #   https://github.com/RIPAGlobal/scimitar/pull/49
+                  #   https://github.com/pond/scimitar/issues/48
+                  #   https://github.com/pond/scimitar/pull/49
                   #
                   # Note the shortcoming that attribute names within extensions
                   # must be unique, as this mechanism basically just pulls out
@@ -1139,7 +1139,7 @@ module Scimitar
                       # Handle the Azure (Entra) case where keys might use
                       # dotted paths - see:
                       #
-                      #   https://github.com/RIPAGlobal/scimitar/issues/123
+                      #   https://github.com/pond/scimitar/issues/123
                       #
                       # ...along with keys containing schema IDs - see:
                       #

@@ -50,8 +50,8 @@ module Scimitar
       # Schema ID-aware splitter handling ":" or "." separators. Adapted from
       # contribution by @bettysteger and @MorrisFreeman in:
       #
-      #   https://github.com/RIPAGlobal/scimitar/issues/48
-      #   https://github.com/RIPAGlobal/scimitar/pull/49
+      #   https://github.com/pond/scimitar/issues/48
+      #   https://github.com/pond/scimitar/pull/49
       #
       # +schemas::   Array of extension schemas, e.g. a SCIM resource class'
       #              <tt>scim_resource_type.extended_schemas</tt> value. The
