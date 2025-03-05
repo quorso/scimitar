@@ -1,6 +1,6 @@
 # Test app configuration.
 #
-# Note that as a result of https://github.com/RIPAGlobal/scimitar/issues/48,
+# Note that as a result of https://github.com/pond/scimitar/issues/48,
 # tests include a custom extension of the core User schema. A shortcoming of
 # some of the code from which Scimitar was originally built is that those
 # extensions are done with class-level ivars, so it is largely impossible (or
@@ -59,7 +59,7 @@ Rails.application.config.to_prepare do
         end
       end
 
-      # In https://github.com/RIPAGlobal/scimitar/issues/122 we learn that with
+      # In https://github.com/pond/scimitar/issues/122 we learn that with
       # more than one extension, things can go wrong - so now we test with two.
       #
       class Manager < Scimitar::Schema::Base

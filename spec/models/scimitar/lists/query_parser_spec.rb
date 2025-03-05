@@ -352,7 +352,7 @@ RSpec.describe Scimitar::Lists::QueryParser do
         expect(result).to eql('filter=userType eq "Employee" and emails.type eq "work" and emails.value co "@example.com"')
       end
 
-      # https://github.com/RIPAGlobal/scimitar/issues/116
+      # https://github.com/pond/scimitar/issues/116
       #
       context 'with schema IDs (GitHub issue #116)' do
         it 'handles simple attributes' do
@@ -381,7 +381,7 @@ RSpec.describe Scimitar::Lists::QueryParser do
         end
       end
 
-      # https://github.com/RIPAGlobal/scimitar/issues/115
+      # https://github.com/pond/scimitar/issues/115
       #
       context 'broken filters from Microsoft (GitHub issue #115)' do
         it 'work with "eq"' do

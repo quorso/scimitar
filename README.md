@@ -60,7 +60,7 @@ Scimitar is best used with Rails and ActiveRecord, but it can be used with other
 
 ### Authentication
 
-Noting the _Security_ section later - to set up an authentication method, create a `config/initializers/scimitar.rb` in your Rails application and define a token-based authenticator and/or a username-password authenticator in the [engine configuration section documented in the sample file](https://github.com/RIPAGlobal/scimitar/blob/main/config/initializers/scimitar.rb). For example:
+Noting the _Security_ section later - to set up an authentication method, create a `config/initializers/scimitar.rb` in your Rails application and define a token-based authenticator and/or a username-password authenticator in the [engine configuration section documented in the sample file](https://github.com/pond/scimitar/blob/main/config/initializers/scimitar.rb). For example:
 
 ```ruby
 Scimitar.engine_configuration = Scimitar::EngineConfiguration.new({
@@ -112,15 +112,19 @@ All routes then will be available at `https://.../scim_v2/...` via controllers y
 
 #### URL helpers
 
-Internally Scimitar always invokes URL helpers in the controller layer. I.e. any variable path parameters will be resolved by Rails automatically. If you need more control over the way URLs are generated you can override any URL helper by redefining it in the application controller mixin. See the [`application_controller_mixin` engine configuration option](https://github.com/RIPAGlobal/scimitar/blob/main/config/initializers/scimitar.rb).
+Internally Scimitar always invokes URL helpers in the controller layer. I.e. any variable path parameters will be resolved by Rails automatically. If you need more control over the way URLs are generated you can override any URL helper by redefining it in the application controller mixin. See the [`application_controller_mixin` engine configuration option](https://github.com/pond/scimitar/blob/main/config/initializers/scimitar.rb).
+
+#### Okta note
+
+Note that Okta has some [curious documentation on its use of `POST` vs `PATCH` for Groups](https://developer.okta.com/docs/api/openapi/okta-scim/guides/scim-20/#update-a-specific-group-name), which per [this Scimitar issue](https://github.com/pond/scimitar/issues/153#issuecomment-2468897194) has caused at least one person some trouble. Defining the routes for both verbs as shown above (though in that issue's case, it was for the Group resource) _does_ still seem to work, but take care if integrating with Okta to try and at least manually test, if not auto-test, `PATCH`/`PUT` operations initiated from Okta's side, just to make sure.
 
 ### Data models
 
 Scimitar assumes that each SCIM resource maps to a single corresponding class in your system. This might be an abstraction over more complex underpinings, but either way, a 1:1 relationship is expected. For example, a SCIM User might map to a User ActiveRecord model in your Rails application, while a SCIM Group might map to some custom class called Team which operates on a more complex set of data "under the hood".
 
-Before writing any controllers, it's a good idea to examine the SCIM specification and figure out how you intend to map SCIM attributes in any resources of interest, to your local data. A [mixin is provided](https://github.com/RIPAGlobal/scimitar/blob/main/app/models/scimitar/resources/mixin.rb) which you can include in any plain old Ruby class (including, but not limited to ActiveRecord model classes) - a more readable form of the comments in this file [is in the RDoc output](https://www.rubydoc.info/gems/scimitar/Scimitar/Resources/Mixin).
+Before writing any controllers, it's a good idea to examine the SCIM specification and figure out how you intend to map SCIM attributes in any resources of interest, to your local data. A [mixin is provided](https://github.com/pond/scimitar/blob/main/app/models/scimitar/resources/mixin.rb) which you can include in any plain old Ruby class (including, but not limited to ActiveRecord model classes) - a more readable form of the comments in this file [is in the RDoc output](https://www.rubydoc.info/gems/scimitar/Scimitar/Resources/Mixin).
 
-The functionality exposed by the mixin is relatively complicated because the range of operations that the SCIM API supports is quite extensive. Rather than duplicate all the information here, please see the extensive comments in the mixin linked above for more information. There are examples in the [test suite's Rails models](https://github.com/RIPAGlobal/scimitar/tree/main/spec/apps/dummy/app/models), or for another example:
+The functionality exposed by the mixin is relatively complicated because the range of operations that the SCIM API supports is quite extensive. Rather than duplicate all the information here, please see the extensive comments in the mixin linked above for more information. There are examples in the [test suite's Rails models](https://github.com/pond/scimitar/tree/main/spec/apps/dummy/app/models), or for another example:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -260,7 +264,7 @@ module Scim
 end
 ```
 
-All data-layer actions are taken via `#find` or `#save!`, with exceptions such as `ActiveRecord::RecordNotFound`, `ActiveRecord::RecordInvalid` or generalised SCIM exceptions handled by various superclasses. For a real Rails example of this, see the [test suite's controllers](https://github.com/RIPAGlobal/scimitar/tree/main/spec/apps/dummy/app/controllers) which are invoked via its [routing declarations](https://github.com/RIPAGlobal/scimitar/blob/main/spec/apps/dummy/config/routes.rb).
+All data-layer actions are taken via `#find` or `#save!`, with exceptions such as `ActiveRecord::RecordNotFound`, `ActiveRecord::RecordInvalid` or generalised SCIM exceptions handled by various superclasses. For a real Rails example of this, see the [test suite's controllers](https://github.com/pond/scimitar/tree/main/spec/apps/dummy/app/controllers) which are invoked via its [routing declarations](https://github.com/pond/scimitar/blob/main/spec/apps/dummy/config/routes.rb).
 
 ##### Overriding controller methods
 
@@ -447,7 +451,7 @@ end
 
 ```
 
-Note that the [`Scimitar::ApplicationController` parent class](https://www.rubydoc.info/gems/scimitar/Scimitar/ApplicationController) of `Scimitar::ResourcesController` has a few methods to help with handling exceptions and rendering them as SCIM responses; for example, if a resource were not found by ID, you might wish to use [`Scimitar::ApplicationController#handle_resource_not_found`](https://github.com/RIPAGlobal/scimitar/blob/v1.0.3/app/controllers/scimitar/application_controller.rb#L22).
+Note that the [`Scimitar::ApplicationController` parent class](https://www.rubydoc.info/gems/scimitar/Scimitar/ApplicationController) of `Scimitar::ResourcesController` has a few methods to help with handling exceptions and rendering them as SCIM responses; for example, if a resource were not found by ID, you might wish to use [`Scimitar::ApplicationController#handle_resource_not_found`](https://github.com/pond/scimitar/blob/v1.0.3/app/controllers/scimitar/application_controller.rb#L22).
 
 ### Extension schema
 
@@ -544,7 +548,7 @@ Whatever you provide in the `::id` method in your extension class will be used a
 }
 ```
 
-**IMPORTANT: Attribute names must be unique** across your entire combined schema, regardless of URNs used. This is because of a limitation in Scimitar's implementation. [This GitHub issue](https://github.com/RIPAGlobal/scimitar/issues/130) explains more. If this is a problem for you, please comment on the GitHub issue to help the maintainers understand the level of demand for remediation.
+**IMPORTANT: Attribute names must be unique** across your entire combined schema, regardless of URNs used. This is because of a limitation in Scimitar's implementation. [This GitHub issue](https://github.com/pond/scimitar/issues/130) explains more. If this is a problem for you, please comment on the GitHub issue to help the maintainers understand the level of demand for remediation.
 
 Resource extensions can provide any fields you choose, under any ID/URN you choose, to either RFC-described resources or entirely custom SCIM resources. There are no hard-coded assumptions or other "magic" that might require you to only extend RFC-described resources with RFC-described extensions. Of course, if you use custom resources or custom extensions that are not described by the SCIM RFCs, then the SCIM API you provide may only work with custom-written API callers that are aware of your bespoke resources and/or extensions.
 
@@ -621,7 +625,7 @@ Often, you'll find that bearer tokens are in use by SCIM API consumers, but the 
 
 * Several complex types for User contain the same set of `value`, `display`, `type` and `primary` fields, all used in synonymous ways.
 
-  - The `value` field - which is e.g. an e-mail address or phone number - is described as optional by [the RFC 7643 core schema](https://tools.ietf.org/html/rfc7643#section-8.7.1), also using "SHOULD" rather than "MUST" in field descriptions elsewhere. Scimitar marks this as required by default, since there's not much point being sent (say) an e-mail section which has entries that don't provide the e-mail address. Some services might send `null` values here regardless so, if you need to be able to accept such data, you can set [engine configuration option `optional_value_fields_required`](https://github.com/RIPAGlobal/scimitar/blob/main/config/initializers/scimitar.rb) to `false`.
+  - The `value` field - which is e.g. an e-mail address or phone number - is described as optional by [the RFC 7643 core schema](https://tools.ietf.org/html/rfc7643#section-8.7.1), also using "SHOULD" rather than "MUST" in field descriptions elsewhere. Scimitar marks this as required by default, since there's not much point being sent (say) an e-mail section which has entries that don't provide the e-mail address. Some services might send `null` values here regardless so, if you need to be able to accept such data, you can set [engine configuration option `optional_value_fields_required`](https://github.com/pond/scimitar/blob/main/config/initializers/scimitar.rb) to `false`.
 
   - The schema _descriptions_ for `display` declare that the field is something optionally sent by the service provider and state clearly that it is read-only - yet the formal schema declares it `readWrite`. Scimitar marks it as read-only.
 
@@ -629,7 +633,7 @@ Often, you'll find that bearer tokens are in use by SCIM API consumers, but the 
 
 * In the `members` section of a [`Group` in the RFC 7643 core schema](https://tools.ietf.org/html/rfc7643#page-69), any member's `value` is noted as _not_ required but [the RFC also says](https://tools.ietf.org/html/rfc7643#section-4.2) "Service providers MAY require clients to provide a non-empty value by setting the "required" attribute characteristic of a sub-attribute of the "members" attribute in the "Group" resource schema". Scimitar does this. The `value` field would contain the `id` of a SCIM resource, which is the primary key on "our side" as a service provider. Just as we must store `externalId` values to maintain a mapping on "our side", we in turn _do_ require clients to provide our ID in group member lists via the `value` field.
 
-* While the gem attempts to support difficult/complex filter strings via incorporating code and ideas in [SCIM Query Filter Parser](https://github.com/ingydotnet/scim-query-filter-parser-rb), it is possible that ActiveRecord / Rails precedence on some query operations in complex cases might not exactly match the SCIM specification. Please do submit a bug report if you encounter this. You may also wish to view [`query_parser_spec.rb`](https://github.com/RIPAGlobal/scimitar/blob/main/spec/models/scimitar/lists/query_parser_spec.rb) to get an idea of the tested examples - more interesting test cases are in the "`context 'with complex cases' do`" section.
+* While the gem attempts to support difficult/complex filter strings via incorporating code and ideas in [SCIM Query Filter Parser](https://github.com/ingydotnet/scim-query-filter-parser-rb), it is possible that ActiveRecord / Rails precedence on some query operations in complex cases might not exactly match the SCIM specification. Please do submit a bug report if you encounter this. You may also wish to view [`query_parser_spec.rb`](https://github.com/pond/scimitar/blob/main/spec/models/scimitar/lists/query_parser_spec.rb) to get an idea of the tested examples - more interesting test cases are in the "`context 'with complex cases' do`" section.
 
 * Group resource examples show the `members` array including field `display`, but this is not in the [formal schema](https://tools.ietf.org/html/rfc7643#page-69); Scimitar includes it in the Group definition.
 
@@ -639,7 +643,7 @@ Often, you'll find that bearer tokens are in use by SCIM API consumers, but the 
 
 * As noted earlier, extension schema attribute names must be unique across your entire combined schema, regardless of schema IDs (URNs) used.
 
-If you believe choices made in this section may be incorrect, please [create a GitHub issue](https://github.com/RIPAGlobal/scimitar/issues/new) describing the problem.
+If you believe choices made in this section may be incorrect, please [create a GitHub issue](https://github.com/pond/scimitar/issues/new) describing the problem.
 
 ### Omissions
 
@@ -653,11 +657,11 @@ If you believe choices made in this section may be incorrect, please [create a G
 
 * Currently filtering for lists is always matched case-insensitive regardless of schema declarations that might indicate otherwise, for `eq`, `ne`, `co`, `sw` and `ew` operators; for greater/less-thank style filters, case is maintained with simple `>`, `<` etc. database operations in use. The standard Group and User schema have `caseExact` set to `false` for just about anything readily queryable, so this hopefully would only ever potentially be an issue for custom schema.
 
-* As an exception to the above, attributes `id`, `externalId` and `meta.*` are matched case-sensitive. Filters that use `eq` on such attributes will end up a comparison using `=` rather than e.g. `ILIKE` (arising from https://github.com/RIPAGlobal/scimitar/issues/36).
+* As an exception to the above, attributes `id`, `externalId` and `meta.*` are matched case-sensitive. Filters that use `eq` on such attributes will end up a comparison using `=` rather than e.g. `ILIKE` (arising from https://github.com/pond/scimitar/issues/36).
 
 * The `PATCH` mechanism is supported, but where filters are included, only a single "attribute eq value" is permitted - no other operators or combinations. For example, a work e-mail address's value could be replaced by a PATCH patch of `emails[type eq "work"].value`. For in-path filters such as this, other operators such as `ne` are not supported; combinations with "and"/"or" are not supported; negation with "not" is not supported.
 
-If you would like to see something listed in the session implemented, please [create a GitHub issue](https://github.com/RIPAGlobal/scimitar/issues/new) asking for it to be implemented, or if possible, implement the feature and send a Pull Request.
+If you would like to see something listed in the session implemented, please [create a GitHub issue](https://github.com/pond/scimitar/issues/new) asking for it to be implemented, or if possible, implement the feature and send a Pull Request.
 
 
 
