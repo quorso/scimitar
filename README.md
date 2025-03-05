@@ -1,7 +1,6 @@
 # Scimitar
 
 [![Gem Version](https://badge.fury.io/rb/scimitar.svg)](https://badge.fury.io/rb/scimitar)
-
 [![Build Status](https://github.com/pond/scimitar/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/pond/scimitar/actions/)
 [![License](https://img.shields.io/badge/license-mit-blue.svg)](https://opensource.org/licenses/MIT)
 
